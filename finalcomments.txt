@@ -1,0 +1,36 @@
+This document serves as a final documentation of all changes, including the debugging process throughout this assignment.
+
+Objective
+The objective was to run docker-compose and observe the state of the site while fixing as many bugs as possible along the way. 
+
+-Docker-compose runs
+Bug 1
+-Site is not accessible from localhost:8080
+-Suspision of web server (nginx) lead to the docker-compose.yml file.
+-Nginx ports are configured in reverse
+
+Bug 2
+-502 Bad Gateway error upon access of site. Error is attributed to a problem upstream. Since the web server is hosting a flask app, this should be the starting point of investigation
+-flaskapp.conf defines the port for flaskapp to be 5001, despite nginx trying to reach flaskapp at 50000
+-A decision had to be made of whether or not to change flaskapp configuration or to add port to app.run()
+-Due to the EXPOSE 5001 command within Dockerfile, the use of 5001 seems to be an intentional design decision, so that will remain preserved and app.py will be edited to match the config file.
+
+Bug 3
+-Site is accessible, but redirects to "localhost%2Clocalhost:8080/success" upon form submission
+-app.py/form.py looked through for bugs
+-Bug was found to be a problem with proxy handling from flaskapp
+-Fixed through deleting Host declaration within flaskapp.conf
+NOTE: Although this did resolve the error, it is important to recognize that this solution was born from an educated guess, and my lack of knowledge of the flaskapp library means that this may not be the most optimal solution. 
+
+Bug 4
+-results within the success page are not properly displaying
+-Reading through app.py shows that results are not properly formatted for printing in str format
+-Changes made to success for properly displaying data
+
+Bug 5
+-form entry does not validate quantity as a number
+-quantity field changed to IntegerField
+-quantity validated for numerical input of 1 to infinity
+
+Closing Comments
+I really enjoyed troubleshooting this project. This assessment and correction was done in a single night, so the lack of incremental commits towards this project is very noticeable. If I were to do a similar project, I would commit after each bug was resolved to better document changes as they are found. More increments also guarantees that changes do not cross-over with one-another if bug fixes have similar dependencies. Going into this project I had little experience with nginx or flaskapp, and I found this experience to be very enlightening in exposure to both technologies.
